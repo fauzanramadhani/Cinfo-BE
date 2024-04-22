@@ -69,7 +69,7 @@
       let counter = 0;
       const socket = io({
         auth: {
-          serverOffset: 0,
+          roomOffset: 0,
         },
         // enable retries
         ackTimeout: 10000,
@@ -95,7 +95,7 @@
         item.textContent = msg;
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
-        socket.auth.serverOffset = serverOffset;
+        socket.auth.roomOffset = serverOffset;
       });
 
       const toggleButton = document.getElementById("toggle-btn");

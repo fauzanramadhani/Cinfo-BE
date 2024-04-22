@@ -11,6 +11,7 @@ require("dotenv").config();
 const initDb = process.env.MONGO_INITDB_DATABASE;
 const defaultCollection = process.env.MONGO_DEFAULT_COLLECTiON;
 const roomCollection = process.env.MONGO_ROOM_COLLECTION;
+const postCollection = process.env.POST_ROOM_COLLECTION;
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { register } = require("./controller/auth");
@@ -46,6 +47,8 @@ async function main() {
   );
   const roomMongoCollection = mongoClient.db(initDb).collection(roomCollection);
   await roomMongoCollection.createIndex({ client_offset: 1 }, { unique: true });
+  const postMongoCollection = mongoClient.db(initDb).collection(postCollection);
+  await postMongoCollection.createIndex({ client_offset: 1 }, { unique: true });
   const app = express();
   const server = createServer(app);
   const io = new Server(server, {
@@ -73,18 +76,25 @@ async function main() {
       console.log("user disconnected");
     });
 
-    socket.on("room", async (msg, callback) => {
+    socket.on("createRoom", async (msg, callback) => {
       try {
         // Mengakses properti dari objek JSON `msg`
         const msgJson = JSON.parse(msg);
         const room_name = msgJson.room_name;
         const additional = msgJson.additional;
-        const client_offset = msgJson.client_offset;
         const date = new Date().getTime();
+        const lastRoom = await roomMongoCollection.findOne(
+          {},
+          { sort: { createdAt: -1 } }
+        );
+        var roomOffset = 1;
+        if (lastRoom) {
+          roomOffset = lastRoom.client_offset + 1 || roomOffset;
+        }
         const result = await roomMongoCollection.insertOne({
           room_name: room_name,
           additional: additional,
-          client_offset: client_offset,
+          client_offset: roomOffset,
           createdAt: date,
         });
         // socket.join(result.insertedId);
@@ -127,9 +137,109 @@ async function main() {
           callback({ status: "error", message: "Room not found" });
           return;
         }
-        console.log(updatedRoom);
         io.emit("room", updatedRoom);
         callback({ status: "ok" });
+      } catch (error) {
+        console.log(error.message.toString());
+        callback({ status: "error", message: error.message });
+      }
+    });
+
+    // socket.on("post", async (req, callback) => {
+    //   const reqJson = JSON.parse(req);
+    //   const { room_id, post_id } = reqJson;
+    //   if (!isValidHex(room_id)) {
+    //     callback({ status: "error", message: "Invalid room id" });
+    //     return;
+    //   }
+    //   if (!isValidHex(post_id)) {
+    //     callback({ status: "error", message: "Invalid post id" });
+    //     return;
+    //   }
+    //   const roomObjectId = new ObjectId(room_id)
+    //   const postObjectId = new ObjectId(room_id)
+    //   const room = await postCollection.findOne({
+    //     _id: roomObjectId,
+    //   });
+    //   if (!room) {
+    //     callback({ status: "error", message: "Room not found" });
+    //     return;
+    //   }
+    //   const post = await postCollection.findOne({
+    //     _id: postObjectId,
+    //   });
+    //   if (!post) {
+    //     callback({ status: "error", message: "Post not found" });
+    //     return;
+    //   }
+    //   if (room_id != post.room_id) {
+    //     callback({ status: "error", message: "Post isn't from this room" });
+    //     return;
+    //   }
+    //   // io.emit("post", updatedRoom);
+    // });
+
+    // Event untuk post pengumuman menggunakan room id
+    socket.on("createPost", async (req, callback) => {
+      try {
+        const reqJson = JSON.parse(req);
+        const { room_id, title, description } = reqJson;
+        if (!isValidHex(room_id)) {
+          callback({ status: "error", message: "Invalid room id" });
+          return;
+        }
+        const roomObjectId = new ObjectId(room_id);
+        const isRoomExist = await roomMongoCollection.findOne({
+          _id: roomObjectId,
+        });
+        if (!isRoomExist) {
+          callback({ status: "error", message: "Room not found" });
+          return;
+        }
+        const lastPost = await postMongoCollection.findOne(
+          {},
+          { sort: { createdAt: -1 } }
+        );
+        var lastPostOffset = 1;
+        if (lastPost) {
+          lastPostOffset = lastPost.client_offset + 1 || lastPostOffset;
+        }
+        const date = new Date().getTime();
+        const post = await postMongoCollection.insertOne({
+          room_id: room_id,
+          title: title,
+          description: description,
+          client_offset: lastPostOffset,
+          createdAt: date,
+        });
+        const insertedPost = await postMongoCollection.findOne({
+          _id: post.insertedId,
+        });
+        await roomMongoCollection.findOneAndUpdate(
+          {
+            _id: roomObjectId,
+          },
+          {
+            $push: {
+              post_id: post.insertedId.toString(),
+            },
+          },
+          { returnDocument: "after" }
+        );
+        io.emit(room_id, JSON.stringify(insertedPost));
+        callback({ status: "ok" });
+        // BIAR GA LUPA:
+        // 1. create post at postCollection
+        // 2. add that post_id to room
+        // 3. emit event kedalam post dan teruskan room_id dan post_id
+        // 4. buat event dgn nama post dan dengan req room_id, post_id
+        // 5. cek apakah post_id ada di dalam room_id
+        // 6. cari post dengan post_id
+        // 7. ketika event post success maka berikan data post tersebut
+        // 8. buat socket recovered dengan melakukan iterasi pada room
+        // lalu lakukan iterasi pada setiap post untuk mendapatkan post id, kemudian cari post berdasarkan post_id
+        // dan terakhir emit setiap post dengan event post.
+        // pada event post, di front end perlu set serverOffset dengan client_offset post terakhir
       } catch (error) {
         console.log(error.message.toString());
         callback({ status: "error", message: error.message });
@@ -157,15 +267,27 @@ async function main() {
     if (!socket.recovered) {
       // if the connection state recovery was not successful
       try {
-        const serverOffset =
-          socket.handshake.auth.serverOffset || "000000000000000000000000";
+        const roomOffset = parseInt(socket.handshake.auth.roomOffset) || 0;
+        const postOffset = parseInt(socket.handshake.auth.postOffset) || 0;
 
         const rooms = await roomMongoCollection
-          .find({ client_offset: { $gt: serverOffset } })
+          .find({ client_offset: { $gt: roomOffset } })
           .toArray();
-
-        rooms.forEach((room) => {
-          socket.emit("room", JSON.stringify(room));
+        rooms.forEach(async (room) => {
+          const roomJson = JSON.stringify(room);
+          socket.emit("room", roomJson);
+          const posts = await postMongoCollection
+            .find({
+              room_id: room._id.toString(),
+              client_offset: { $gt: postOffset },
+            })
+            .toArray();
+          console.log(room._id.toString());
+          if (posts) {
+            posts.forEach((post) => {
+              socket.emit(room._id.toString(), JSON.stringify(post));
+            });
+          }
         });
 
         // Mark socket as recovered
