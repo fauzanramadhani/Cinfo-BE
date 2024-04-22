@@ -2,11 +2,11 @@
 
 Api ini dipakai untuk aplikasi Cinfo, Kami menggunakan real-time database socket-io dan http request.
 
-# Realtime 1
+### Realtime 1
 
-## Event
+#### Event
 
-### `room`
+`room`
 
 #### Message
 
@@ -25,11 +25,11 @@ Api ini dipakai untuk aplikasi Cinfo, Kami menggunakan real-time database socket
 }
 ```
 
-# Realtime 2
+### Realtime 2
 
-## Event
+#### Event
 
-### `creatRoom`
+`creatRoom`
 
 #### Message
 
@@ -44,11 +44,11 @@ Api ini dipakai untuk aplikasi Cinfo, Kami menggunakan real-time database socket
 
 if success event `room` will be triggered with the new value
 
-# Realtime 3
+### Realtime 3
 
-## Event
+#### Event
 
-### `editRoom`
+`editRoom`
 
 #### Message
 
@@ -66,13 +66,11 @@ if success event `room` will be triggered with the new value
 
 # -
 
-# HTTP Request
+### HTTP Request
 
-## Endpoints
+#### Endpoints
 
-### `GET /endpoint`
-
-Deskripsi singkat tentang endpoint ini.
+`GET /endpoint`
 
 #### Request
 
@@ -84,11 +82,9 @@ Deskripsi singkat tentang endpoint ini.
 
 Contoh respons yang diharapkan:
 
-````json
+```json
 {
   "key1": "value1",
   "key2": "value2"
-}```
-
-
-````
+}
+```
