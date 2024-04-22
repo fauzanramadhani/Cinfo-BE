@@ -2,6 +2,8 @@
 
 Api ini dipakai untuk aplikasi Cinfo, Kami menggunakan real-time database socket-io dan http request.
 
+---
+
 ### Realtime 1
 
 #### Event
@@ -25,6 +27,8 @@ Api ini dipakai untuk aplikasi Cinfo, Kami menggunakan real-time database socket
 }
 ```
 
+---
+
 ### Realtime 2
 
 #### Event
@@ -43,6 +47,8 @@ Api ini dipakai untuk aplikasi Cinfo, Kami menggunakan real-time database socket
 #### Response
 
 if success event `room` will be triggered with the new value
+
+---
 
 ### Realtime 3
 
