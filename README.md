@@ -12,7 +12,7 @@ Api ini dipakai untuk aplikasi Cinfo, Kami menggunakan real-time database socket
 
 #### Message
 
-"-"
+`-`
 
 #### Response
 
@@ -80,7 +80,7 @@ if success event `room` will be triggered with the new value
 
 #### Message
 
-"-"
+`-`
 
 #### Response
 
@@ -130,7 +130,7 @@ if success event `$room_id` will be triggered with the new value
 **Body Parameters**
 _x-www-form-urlencoded_
 
-- `email`: "fauzanramadhani06@gmail.com".
+- `email: "fauzanramadhani06@gmail.com".`
 
 #### Response
 
@@ -158,7 +158,7 @@ _x-www-form-urlencoded_
 
 _x-www-form-urlencoded_
 
-- `email`: "fauzanramadhani06@gmail.com".
+- `email: "fauzanramadhani06@gmail.com".`
 
 #### Response
 
@@ -181,7 +181,7 @@ _x-www-form-urlencoded_
 
 **Body Parameters**
 
-"-"
+`-`
 
 #### Response
 
@@ -205,7 +205,9 @@ _x-www-form-urlencoded_
 
 **Body Parameters**
 
-"-"
+_x-www-form-urlencoded_
+
+- `email: "fauzanramadhani06@gmail.com".`
 
 #### Response
 
