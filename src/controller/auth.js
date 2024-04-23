@@ -30,7 +30,7 @@ const register = async (req, res) => {
       status: "success",
       message: "User created successfully",
       data: {
-        email: user._id.toString(),
+        user_id: user._id.toString(),
       },
     });
   } catch (error) {

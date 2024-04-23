@@ -12,7 +12,7 @@ Api ini dipakai untuk aplikasi Cinfo, Kami menggunakan real-time database socket
 
 #### Message
 
--
+"-"
 
 #### Response
 
@@ -39,7 +39,7 @@ Api ini dipakai untuk aplikasi Cinfo, Kami menggunakan real-time database socket
 
 ```json
 {
-  "room_name": "Teknik Informatika wk",
+  "room_name": "Teknik Informatika",
   "additional": "Angkatan 3"
 }
 ```
@@ -61,7 +61,7 @@ if success event `room` will be triggered with the new value
 ```json
 {
   "_id": "662645acb3c221d33c039365",
-  "room_name": "Teknik Informatika 1",
+  "room_name": "Teknik Informatika",
   "additional": "Angkatan 1"
 }
 ```
@@ -80,7 +80,7 @@ if success event `room` will be triggered with the new value
 
 #### Message
 
--
+"-"
 
 #### Response
 
@@ -119,25 +119,99 @@ if success event `$room_id` will be triggered with the new value
 
 ---
 
-### HTTP Request
+### HTTP Request 1
 
 #### Endpoints
 
-`GET /endpoint`
+`POST /register`
 
 #### Request
 
-**Query Parameters**
+**Body Parameters**
+_x-www-form-urlencoded_
 
-- `parameter1`: Deskripsi tentang parameter ini. Contoh: `value1` - Deskripsi nilai.
+- `email`: "fauzanramadhani06@gmail.com".
 
 #### Response
 
-Contoh respons yang diharapkan:
+```json
+{
+  "status": "success",
+  "message": "User created successfully",
+  "data": {
+    "user_id": "6627177e62138a136945004c"
+  }
+}
+```
+
+---
+
+### HTTP Request 2
+
+#### Endpoints
+
+`POST /$room_id/add-member`
+
+#### Request
+
+**Body Parameters**
+
+_x-www-form-urlencoded_
+
+- `email`: "fauzanramadhani06@gmail.com".
+
+#### Response
 
 ```json
 {
-  "key1": "value1",
-  "key2": "value2"
+  "status": "success",
+  "message": "User added to room"
+}
+```
+
+---
+
+### HTTP Request 3
+
+#### Endpoints
+
+`GET /$room_id/get-all-member-email`
+
+#### Request
+
+**Body Parameters**
+
+"-"
+
+#### Response
+
+```json
+{
+  "status": "success",
+  "message": "Successfully fetch all member email",
+  "data": ["fauzanramadhani07@gmail.com"]
+}
+```
+
+---
+
+### HTTP Request 4
+
+#### Endpoints
+
+`POST /$room_id/kick-member-by-email`
+
+#### Request
+
+**Body Parameters**
+
+"-"
+
+#### Response
+
+```json
+{
+  "status": "success",
+  "message": "Member kicked from the room"
 }
 ```
