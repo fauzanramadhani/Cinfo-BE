@@ -12,14 +12,14 @@ Api ini dipakai untuk aplikasi Cinfo, Kami menggunakan real-time database socket
 
 #### Message
 
-**-**
+-
 
 #### Response
 
 ```json
 {
   "_id": "6626483efa600550d677b8e0",
-  "room_name": "Teknik Informatika wk",
+  "room_name": "Teknik Informatika",
   "additional": "Angkatan 3",
   "client_offset": 2,
   "createdAt": 1713784894417,
@@ -33,7 +33,7 @@ Api ini dipakai untuk aplikasi Cinfo, Kami menggunakan real-time database socket
 
 #### Event
 
-`creatRoom`
+`createRoom`
 
 #### Message
 
@@ -69,6 +69,53 @@ if success event `room` will be triggered with the new value
 #### Response
 
 if success event `room` will be triggered with the new value
+
+---
+
+### Realtime 4
+
+#### Event
+
+`$room_id`
+
+#### Message
+
+-
+
+#### Response
+
+```json
+{
+  "_id": "66264891fa600550d677b8e2", // post_id
+  "room_id": "6626483efa600550d677b8e0",
+  "title": "Post 2",
+  "description": "Angkatan 3",
+  "client_offset": 5,
+  "createdAt": 1713784977905
+}
+```
+
+---
+
+### Realtime 5
+
+#### Event
+
+`createPost`
+
+#### Message
+
+```json
+{
+  "room_id": "662645acb3c221d33c039365",
+  "title": "Liburan Idul Fitri",
+  "description": "Libur akan di adakan pada tanggal 2 April 2024"
+}
+```
+
+#### Response
+
+if success event `$room_id` will be triggered with the new value
 
 ---
 

@@ -145,41 +145,6 @@ async function main() {
       }
     });
 
-    // socket.on("post", async (req, callback) => {
-    //   const reqJson = JSON.parse(req);
-    //   const { room_id, post_id } = reqJson;
-    //   if (!isValidHex(room_id)) {
-    //     callback({ status: "error", message: "Invalid room id" });
-    //     return;
-    //   }
-    //   if (!isValidHex(post_id)) {
-    //     callback({ status: "error", message: "Invalid post id" });
-    //     return;
-    //   }
-    //   const roomObjectId = new ObjectId(room_id)
-    //   const postObjectId = new ObjectId(room_id)
-    //   const room = await postCollection.findOne({
-    //     _id: roomObjectId,
-    //   });
-    //   if (!room) {
-    //     callback({ status: "error", message: "Room not found" });
-    //     return;
-    //   }
-    //   const post = await postCollection.findOne({
-    //     _id: postObjectId,
-    //   });
-    //   if (!post) {
-    //     callback({ status: "error", message: "Post not found" });
-    //     return;
-    //   }
-    //   if (room_id != post.room_id) {
-    //     callback({ status: "error", message: "Post isn't from this room" });
-    //     return;
-    //   }
-    //   // io.emit("post", updatedRoom);
-    // });
-
-    // Event untuk post pengumuman menggunakan room id
     socket.on("createPost", async (req, callback) => {
       try {
         const reqJson = JSON.parse(req);
@@ -228,18 +193,6 @@ async function main() {
         );
         io.emit(room_id, JSON.stringify(insertedPost));
         callback({ status: "ok" });
-        // BIAR GA LUPA:
-        // 1. create post at postCollection
-        // 2. add that post_id to room
-        // 3. emit event kedalam post dan teruskan room_id dan post_id
-        // 4. buat event dgn nama post dan dengan req room_id, post_id
-        // 5. cek apakah post_id ada di dalam room_id
-        // 6. cari post dengan post_id
-        // 7. ketika event post success maka berikan data post tersebut
-        // 8. buat socket recovered dengan melakukan iterasi pada room
-        // lalu lakukan iterasi pada setiap post untuk mendapatkan post id, kemudian cari post berdasarkan post_id
-        // dan terakhir emit setiap post dengan event post.
-        // pada event post, di front end perlu set serverOffset dengan client_offset post terakhir
       } catch (error) {
         console.log(error.message.toString());
         callback({ status: "error", message: error.message });
