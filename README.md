@@ -6,7 +6,7 @@ Server for the Cinfo application, this server was built using Websocket technolo
 
 ### Realtime 1
 
-#### DESCRIPTION
+#### Description
 
 `This api is supposed to be used by admin`
 
@@ -35,7 +35,7 @@ Server for the Cinfo application, this server was built using Websocket technolo
 
 ### Realtime 2
 
-#### DESCRIPTION
+#### Description
 
 `This api is supposed to be used by admin`
 
@@ -60,7 +60,7 @@ if success event `room` will be triggered with the new value
 
 ### Realtime 3
 
-#### DESCRIPTION
+#### Description
 
 `This api is supposed to be used by admin`
 
@@ -86,7 +86,7 @@ if success event `room` will be triggered with the new value
 
 ### Realtime 4
 
-#### DESCRIPTION
+#### Description
 
 `This api is supposed to be used by admin`
 
@@ -110,7 +110,7 @@ if success event `onDeleteRoom` and `${user_id}-on-room-update` will be triggere
 
 ### Realtime 5
 
-#### DESCRIPTION
+#### Description
 
 `This api is supposed to be used by admin`
 
@@ -130,7 +130,7 @@ if success event `onDeleteRoom` and `${user_id}-on-room-update` will be triggere
 
 ### Realtime 6
 
-#### DESCRIPTION
+#### Description
 
 `This api is supposed to be used by admin`
 
@@ -155,7 +155,7 @@ if success event `${room_id}-member` and `${user_id}-on-room-update` will be tri
 
 ### Realtime 7
 
-#### DESCRIPTION
+#### Description
 
 `This api is supposed to be used by admin`
 
@@ -180,7 +180,7 @@ if success event `${room_id}-on-delete-member` and `${user_id}-on-room-update` w
 
 ### Realtime 8
 
-#### DESCRIPTION
+#### Description
 
 `This api is supposed to be used by admin`
 
@@ -208,7 +208,7 @@ if success event `${room_id}-on-delete-member` and `${user_id}-on-room-update` w
 
 ### Realtime 9
 
-#### DESCRIPTION
+#### Description
 
 `This api is supposed to be used by admin`
 
@@ -228,7 +228,7 @@ if success event `${room_id}-on-delete-member` and `${user_id}-on-room-update` w
 
 ### Realtime 10
 
-#### DESCRIPTION
+#### Description
 
 `This api is supposed to be used by user`
 
@@ -248,7 +248,7 @@ if success event `${room_id}-on-delete-member` and `${user_id}-on-room-update` w
 
 ### Realtime 11
 
-#### DESCRIPTION
+#### Description
 
 `This api is supposed to be used by admin and user`
 
@@ -277,7 +277,7 @@ if success event `${room_id}-on-delete-member` and `${user_id}-on-room-update` w
 
 ### Realtime 12
 
-#### DESCRIPTION
+#### Description
 
 `This api is supposed to be used by admin`
 
@@ -303,7 +303,7 @@ if success event `$room_id` will be triggered with the new value
 
 ### HTTP Request 1
 
-#### DESCRIPTION
+#### Description
 
 `This api is supposed to be used by user`
 
@@ -335,7 +335,7 @@ _x-www-form-urlencoded_
 
 ### HTTP Request 2
 
-#### DESCRIPTION
+#### Description
 
 `This api is supposed to be used by user`
 
