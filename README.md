@@ -136,6 +136,56 @@ if success event `onDeleteRoom` and `${user_id}-on-room-update` will be triggere
 
 #### Event
 
+`addMember`
+
+#### Message
+
+```json
+{
+  "email": "fauzanramadhani06@gmail.com",
+  "room_id": "662e78514f1c1456f7e8ad50"
+}
+```
+
+#### Response
+
+if success event `${room_id}-member` and `${user_id}-on-room-update` will be triggered with the new value
+
+---
+
+### Realtime 7
+
+#### DESCRIPTION
+
+`This api is supposed to be used by admin`
+
+#### Event
+
+`deleteMember`
+
+#### Message
+
+```json
+{
+  "member_id": "662e724ecc633415df745553",
+  "room_id": "662e78514f1c1456f7e8ad50"
+}
+```
+
+#### Response
+
+if success event `${room_id}-on-delete-member` and `${user_id}-on-room-update` will be triggered with the new value
+
+---
+
+### Realtime 8
+
+#### DESCRIPTION
+
+`This api is supposed to be used by admin`
+
+#### Event
+
 `${room_id}-member`
 
 #### Message
@@ -156,27 +206,7 @@ if success event `onDeleteRoom` and `${user_id}-on-room-update` will be triggere
 
 ---
 
-### Realtime 7
-
-#### DESCRIPTION
-
-`This api is supposed to be used by user`
-
-#### Event
-
-`${user_id}-on-room-update`
-
-#### Message
-
-`-`
-
-#### Response
-
-`${new_room_id}`
-
----
-
-### Realtime 8
+### Realtime 9
 
 #### DESCRIPTION
 
@@ -196,7 +226,27 @@ if success event `onDeleteRoom` and `${user_id}-on-room-update` will be triggere
 
 ---
 
-### Realtime 9
+### Realtime 10
+
+#### DESCRIPTION
+
+`This api is supposed to be used by user`
+
+#### Event
+
+`${user_id}-on-room-update`
+
+#### Message
+
+`-`
+
+#### Response
+
+`${new_room_id}`
+
+---
+
+### Realtime 11
 
 #### DESCRIPTION
 
@@ -225,7 +275,7 @@ if success event `onDeleteRoom` and `${user_id}-on-room-update` will be triggere
 
 ---
 
-### Realtime 10
+### Realtime 12
 
 #### DESCRIPTION
 
