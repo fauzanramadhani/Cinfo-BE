@@ -1,6 +1,6 @@
 # Cinfo BE
 
-Api ini dipakai untuk aplikasi Cinfo, Kami menggunakan real-time database socket-io dan http request.
+Server for the Cinfo application, this server was built using Websocket technology by utilizing the Socket.Io library and also this server uses conventional HTTP Requests for several APIs
 
 ---
 
