@@ -354,7 +354,7 @@ _x-www-form-urlencoded_
 ```json
 {
   "status": "success",
-  "message": "Get room_id successfully",
+  "message": "Get room id successfully",
   "data": "662645acb3c221d33c039365"
 }
 ```
