@@ -297,7 +297,7 @@ _x-www-form-urlencoded_
 
 **Headers**
 
-`Bearer ${user_id}`
+`authorization: Bearer ${user_id}`
 
 #### Response
 
