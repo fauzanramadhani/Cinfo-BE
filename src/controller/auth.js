@@ -19,8 +19,17 @@ const register = async (req, res) => {
         message: "User already exist",
       });
     }
+    const lastAccount = await accountMongoCollection.findOne(
+      {},
+      { sort: { createdAt: -1 } }
+    );
+    var clientOffset = 1;
+    if (lastAccount) {
+      clientOffset = lastAccount.client_offset + 1 || clientOffset;
+    }
     await accountMongoCollection.insertOne({
       email: email,
+      client_offset: clientOffset,
       createdAt: date,
     });
     const user = await accountMongoCollection.findOne({
@@ -42,4 +51,47 @@ const register = async (req, res) => {
   }
 };
 
-module.exports = { register };
+const checkAuth = async (req, res, next) => {
+  try {
+    const { authorization } = req.headers;
+
+    if (!authorization) {
+      return res.status(400).json({ 
+        status: "error",
+        message: "You must be logged in"
+       });
+    }
+
+    const user_id = authorization.replace("Bearer ", "");
+
+    if (!isValidHex(user_id)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid user id",
+      });
+    }
+
+    const userObjectId = new ObjectId(room_id);
+
+    const user = await accountMongoCollection.findOne({
+      _id: userObjectId
+    })
+
+    if (!user) {
+      return res.status(400).json({ 
+        status: "error",
+        message: "User not found"
+       });
+    }
+
+    req.user = user;
+
+    next();
+  } catch (error) {
+    return res.status(401).json({ 
+      message: error.message 
+    });
+  }
+};
+
+module.exports = { register, checkAuth };

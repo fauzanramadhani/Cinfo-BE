@@ -6,6 +6,10 @@ Api ini dipakai untuk aplikasi Cinfo, Kami menggunakan real-time database socket
 
 ### Realtime 1
 
+#### DESCRIPTION
+
+`This api is supposed to be used by admin`
+
 #### Event
 
 `room`
@@ -31,6 +35,10 @@ Api ini dipakai untuk aplikasi Cinfo, Kami menggunakan real-time database socket
 
 ### Realtime 2
 
+#### DESCRIPTION
+
+`This api is supposed to be used by admin`
+
 #### Event
 
 `createRoom`
@@ -52,6 +60,10 @@ if success event `room` will be triggered with the new value
 
 ### Realtime 3
 
+#### DESCRIPTION
+
+`This api is supposed to be used by admin`
+
 #### Event
 
 `editRoom`
@@ -60,7 +72,7 @@ if success event `room` will be triggered with the new value
 
 ```json
 {
-  "_id": "662645acb3c221d33c039365",
+  "room_id": "662645acb3c221d33c039365",
   "room_name": "Teknik Informatika",
   "additional": "Angkatan 1"
 }
@@ -73,6 +85,122 @@ if success event `room` will be triggered with the new value
 ---
 
 ### Realtime 4
+
+#### DESCRIPTION
+
+`This api is supposed to be used by admin`
+
+#### Event
+
+`deleteRoom`
+
+#### Message
+
+```json
+{
+  "room_id": "662e78514f1c1456f7e8ad50"
+}
+```
+
+#### Response
+
+if success event `onDeleteRoom` and `${user_id}-on-room-update` will be triggered with the new value
+
+---
+
+### Realtime 5
+
+#### DESCRIPTION
+
+`This api is supposed to be used by admin`
+
+#### Event
+
+`onDeleteRoom`
+
+#### Message
+
+`-`
+
+#### Response
+
+`${deleted_room_id}`
+
+---
+
+### Realtime 6
+
+#### DESCRIPTION
+
+`This api is supposed to be used by admin`
+
+#### Event
+
+`${room_id}-member`
+
+#### Message
+
+`-`
+
+#### Response
+
+```json
+{
+  "_id": "662e724ecc633415df745553",
+  "email": "fauzanramadhani06@gmail.com",
+  "client_offset": 1,
+  "createdAt": 1714319950464,
+  "room_id": "662e78514f1c1456f7e8ad50"
+}
+```
+
+---
+
+### Realtime 7
+
+#### DESCRIPTION
+
+`This api is supposed to be used by user`
+
+#### Event
+
+`${user_id}-on-room-update`
+
+#### Message
+
+`-`
+
+#### Response
+
+`${new_room_id}`
+
+---
+
+### Realtime 8
+
+#### DESCRIPTION
+
+`This api is supposed to be used by admin`
+
+#### Event
+
+`${room_id}-on-delete-member`
+
+#### Message
+
+`-`
+
+#### Response
+
+`${deleted_member_id}`
+
+---
+
+### Realtime 9
+
+#### DESCRIPTION
+
+`This api is supposed to be used by admin and user`
 
 #### Event
 
@@ -97,7 +225,11 @@ if success event `room` will be triggered with the new value
 
 ---
 
-### Realtime 5
+### Realtime 10
+
+#### DESCRIPTION
+
+`This api is supposed to be used by admin`
 
 #### Event
 
@@ -120,6 +252,10 @@ if success event `$room_id` will be triggered with the new value
 ---
 
 ### HTTP Request 1
+
+#### DESCRIPTION
+
+`This api is supposed to be used by user`
 
 #### Endpoints
 
@@ -149,72 +285,26 @@ _x-www-form-urlencoded_
 
 ### HTTP Request 2
 
+#### DESCRIPTION
+
+`This api is supposed to be used by user`
+
 #### Endpoints
 
-`POST /$room_id/add-member`
+`GET /get-room-id`
 
 #### Request
 
-**Body Parameters**
+**Headers**
 
-_x-www-form-urlencoded_
-
-- `email: "fauzanramadhani06@gmail.com".`
+`Bearer ${user_id}`
 
 #### Response
 
 ```json
 {
   "status": "success",
-  "message": "User added to room"
-}
-```
-
----
-
-### HTTP Request 3
-
-#### Endpoints
-
-`GET /$room_id/get-all-member-email`
-
-#### Request
-
-**Body Parameters**
-
-`-`
-
-#### Response
-
-```json
-{
-  "status": "success",
-  "message": "Successfully fetch all member email",
-  "data": ["fauzanramadhani07@gmail.com"]
-}
-```
-
----
-
-### HTTP Request 4
-
-#### Endpoints
-
-`POST /$room_id/kick-member-by-email`
-
-#### Request
-
-**Body Parameters**
-
-_x-www-form-urlencoded_
-
-- `email: "fauzanramadhani06@gmail.com".`
-
-#### Response
-
-```json
-{
-  "status": "success",
-  "message": "Member kicked from the room"
+  "message": "Get room_id successfully",
+  "data": "662645acb3c221d33c039365"
 }
 ```
