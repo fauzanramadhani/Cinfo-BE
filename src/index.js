@@ -374,7 +374,7 @@ async function main() {
           },
           { returnDocument: "after" }
         );
-        io.emit(room_id, insertedPost);
+        io.emit(`${room_id}-post`, insertedPost);
         callback({ status: "ok" });
       } catch (error) {
         console.log(error.message.toString());
@@ -384,19 +384,8 @@ async function main() {
 
     socket.on("editPost", async (req, callback) => {
       const reqJson = JSON.parse(req);
-      const { room_id, post_id, title, description } = reqJson;
-      if (!isValidHex(room_id)) {
-        callback({ status: "error", message: "Invalid room id" });
-        return;
-      }
-      const roomObjectId = new ObjectId(room_id);
-      const isRoomExist = await roomMongoCollection.findOne({
-        _id: roomObjectId,
-      });
-      if (!isRoomExist) {
-        callback({ status: "error", message: "Room not found" });
-        return;
-      }
+      const { post_id, title, description } = reqJson;
+
       if (!isValidHex(post_id)) {
         callback({ status: "error", message: "Invalid post id" });
         return;
@@ -418,11 +407,41 @@ async function main() {
         callback({ status: "error", message: "Post not found" });
         return;
       }
-      io.emit(room_id, updatedPost);
+      io.emit(`${updatedPost.room_id}-post`, updatedPost);
       callback({ status: "ok" });
     });
 
-    socket.on("deletePost", async (req, callback) => {});
+    socket.on("deletePost", async (req, callback) => {
+      const reqJson = JSON.parse(req);
+      const { post_id } = reqJson;
+      if (!isValidHex(post_id)) {
+        callback({ status: "error", message: "Invalid post id" });
+        return;
+      }
+      const postObjectId = new ObjectId(post_id);
+      const post = await postMongoCollection.findOne({
+        _id: postObjectId,
+      });
+      if (!post) {
+        callback({ status: "error", message: "Post not found" });
+        return;
+      }
+      await postMongoCollection.deleteOne({
+        _id: postObjectId,
+      });
+      const updatedRoom = await roomMongoCollection.findOneAndUpdate(
+        {
+          _id: new ObjectId(post.room_id),
+        },
+        {
+          $pull: {
+            post_id: post_id,
+          },
+        }
+      );
+      io.emit(`${updatedRoom._id.toString()}-on-delete-post`, post_id);
+      callback({ status: "ok" });
+    });
 
     socket.on("chat message", async (msg, clientOffset, callback) => {
       try {

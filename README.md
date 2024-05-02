@@ -254,7 +254,7 @@ if success event `${room_id}-on-delete-member` and `${user_id}-on-room-update` w
 
 #### Event
 
-`$room_id`
+`${room_id}-post`
 
 #### Message
 
@@ -297,7 +297,77 @@ if success event `${room_id}-on-delete-member` and `${user_id}-on-room-update` w
 
 #### Response
 
-if success event `$room_id` will be triggered with the new value
+if success event `${room_id}-post` will be triggered with the new value
+
+---
+
+### Realtime 13
+
+#### Description
+
+`This api is supposed to be used by admin`
+
+#### Event
+
+`editPost`
+
+#### Message
+
+```json
+{
+  "post_id": "663381a2a810adfd50795d3f",
+  "title": "Liburan Idul Fitri",
+  "description": "Selamat hari raya idul fitri"
+}
+```
+
+#### Response
+
+if success event `${room_id}-post` will be triggered with the new value
+
+---
+
+### Realtime 14
+
+#### Description
+
+`This api is supposed to be used by admin`
+
+#### Event
+
+`deletePost`
+
+#### Message
+
+```json
+{
+  "post_id": "663381a2a810adfd50795d3f"
+}
+```
+
+#### Response
+
+if success event `${room_id}-on-delete-post` will be triggered with the new value
+
+---
+
+### Realtime 15
+
+#### Description
+
+`This api is supposed to be used by user and admin`
+
+#### Event
+
+`${room_id}-on-delete-post`
+
+#### Message
+
+`-`
+
+#### Response
+
+`${deleted_post_id}`
 
 ---
 
