@@ -13,6 +13,7 @@ const defaultCollection = process.env.MONGO_DEFAULT_COLLECTiON;
 const roomCollection = process.env.MONGO_ROOM_COLLECTION;
 const postCollection = process.env.POST_ROOM_COLLECTION;
 const accountCollection = process.env.ACCOUNT_ROOM_COLLECTION;
+const postGlobalCollection = process.env.POST_GLOBAL_COLLECTION;
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { register, checkAuth } = require("./controller/auth");
@@ -39,6 +40,14 @@ async function main() {
     .db(initDb)
     .collection(defaultCollection);
   await defaultMongoCollection.createIndex(
+    { client_offset: 1 },
+    { unique: true }
+  );
+
+  const postGlobalMongoCollection = mongoClient
+    .db(initDb)
+    .collection(postGlobalCollection);
+  await postGlobalMongoCollection.createIndex(
     { client_offset: 1 },
     { unique: true }
   );
@@ -75,6 +84,109 @@ async function main() {
     console.log("connected");
     socket.on("disconnect", () => {
       console.log("user disconnected");
+    });
+
+    // Global Room
+
+    socket.on("createPostGlobal", async (req, callback) => {
+      try {
+        const reqJson = JSON.parse(req);
+        const { title, description } = reqJson;
+        const date = new Date().getTime();
+
+        const lastPost = await postGlobalMongoCollection.findOne(
+          {},
+          { sort: { createdAt: -1 } }
+        );
+        var lastPostOffset = 1;
+        if (lastPost) {
+          lastPostOffset = lastPost.client_offset + 1 || lastPostOffset;
+        }
+
+        const post = await postGlobalMongoCollection.insertOne({
+          title: title,
+          description: description,
+          client_offset: lastPostOffset,
+          createdAt: date,
+        });
+        const insertedPost = await postGlobalMongoCollection.findOne({
+          _id: post.insertedId,
+        });
+        io.emit("postGlobal", insertedPost);
+        callback({ status: "ok" });
+      } catch (error) {
+        callback({
+          status: "error",
+          message: error.message,
+        });
+        console.log(error.message.toString());
+      }
+    });
+
+    socket.on("editPostGlobal", async (req, callback) => {
+      try {
+        const reqJson = JSON.parse(req);
+        const { post_id, title, description } = reqJson;
+        if (!isValidHex(post_id)) {
+          callback({ status: "error", message: "Invalid global post id" });
+          return;
+        }
+        const postGlobalObjectId = new ObjectId(post_id);
+        const updatedPostGlobal =
+          await postGlobalMongoCollection.findOneAndUpdate(
+            {
+              _id: postGlobalObjectId,
+            },
+            {
+              $set: {
+                title: title,
+                description: description,
+              },
+            },
+            { returnDocument: "after" }
+          );
+
+        if (!updatedPostGlobal) {
+          callback({ status: "error", message: "Global post not found" });
+          return;
+        }
+        io.emit("postGlobal", updatedPostGlobal);
+        callback({ status: "ok" });
+      } catch (error) {
+        callback({
+          status: "error",
+          message: error.message,
+        });
+        console.log(error.message.toString());
+      }
+    });
+
+    socket.on("deletePostGlobal", async (req, callback) => {
+      try {
+        const reqJson = JSON.parse(req);
+        const { post_id } = reqJson;
+        if (!isValidHex(post_id)) {
+          callback({ status: "error", message: "Invalid global post id" });
+          return;
+        }
+        const postGlobalObjectId = new ObjectId(post_id);
+        const deletedpostGlobal =
+          await postGlobalMongoCollection.findOneAndDelete({
+            _id: postGlobalObjectId,
+          });
+        if (!deletedpostGlobal) {
+          callback({ status: "error", message: "Global post not found" });
+          return;
+        }
+        io.emit("onDeletedPostGlobal", post_id);
+        callback({ status: "ok" });
+      } catch (error) {
+        callback({
+          status: "error",
+          message: error.message,
+        });
+        console.log(error.message.toString());
+      }
     });
 
     // room
@@ -465,6 +577,8 @@ async function main() {
     if (!socket.recovered) {
       // if the connection state recovery was not successful
       try {
+        const postGlobalOffset =
+          parseInt(socket.handshake.auth.postGlobalOffset) || 0;
         const roomOffset = parseInt(socket.handshake.auth.roomOffset) || 0;
         const postOffset = parseInt(socket.handshake.auth.postOffset) || 0;
         const memberOffset = parseInt(socket.handshake.auth.memberOffset) || 0;
@@ -500,6 +614,14 @@ async function main() {
               io.emit(`${room._id.toString()}-post`, post);
             });
           }
+        });
+
+        const postGlobal = await postGlobalMongoCollection
+          .find({ client_offset: { $gt: postGlobalOffset } })
+          .toArray();
+
+        postGlobal.forEach((post) => {
+          io.emit("postGlobal", post);
         });
 
         // Mark socket as recovered
