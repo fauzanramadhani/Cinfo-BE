@@ -8,6 +8,109 @@ Server for the Cinfo application, this server was built using Websocket technolo
 
 #### Description
 
+`This api is supposed to be used by user and admin`
+
+#### Event
+
+`postGlobal`
+
+#### Message
+
+`-`
+
+#### Response
+
+```json
+{
+  "_id": "6635cadb97faf3bd66d3b589",
+  "title": "Post Global Title 4",
+  "description": "Desc 4",
+  "client_offset": 4,
+  "createdAt": 1714801371544
+}
+```
+
+---
+
+### Realtime 2
+
+#### Description
+
+`This api is supposed to be used by admin`
+
+#### Event
+
+`createPostGlobal`
+
+#### Message
+
+```json
+{
+  "title": "Post Global Title",
+  "description": "Desc"
+}
+```
+
+#### Response
+
+if success event `postGlobal` will be triggered with the new value
+
+---
+
+### Realtime 3
+
+#### Description
+
+`This api is supposed to be used by admin`
+
+#### Event
+
+`editPostGlobal`
+
+#### Message
+
+```json
+{
+  "post_id": "6635c70edb01ccd025fb6776",
+  "title": "Post Global Title 3 edited",
+  "description": "Desc 3 edited"
+}
+```
+
+#### Response
+
+if success event `postGlobal` will be triggered with the new value
+
+---
+
+### Realtime 4
+
+#### Description
+
+`This api is supposed to be used by admin`
+
+#### Event
+
+`deletePostGlobal`
+
+#### Message
+
+```json
+{
+  "post_id": "6635cadb97faf3bd66d3b589"
+}
+```
+
+#### Response
+
+if success event `postGlobal` will be triggered with the new value
+
+---
+
+### Realtime 1
+
+#### Description
+
 `This api is supposed to be used by admin`
 
 #### Event
@@ -92,6 +195,26 @@ if success event `room` will be triggered with the new value
 
 #### Event
 
+`onDeletedPostGlobal`
+
+#### Message
+
+`-`
+
+#### Response
+
+`${deleted_global_room_id}`
+
+---
+
+### Realtime 5
+
+#### Description
+
+`This api is supposed to be used by admin`
+
+#### Event
+
 `deleteRoom`
 
 #### Message
@@ -104,11 +227,11 @@ if success event `room` will be triggered with the new value
 
 #### Response
 
-if success event `onDeleteRoom` and `${user_id}-on-room-update` will be triggered with the new value
+if success event `onDeletedPostGlobal` will be triggered with the new value
 
 ---
 
-### Realtime 5
+### Realtime 6
 
 #### Description
 
@@ -128,7 +251,7 @@ if success event `onDeleteRoom` and `${user_id}-on-room-update` will be triggere
 
 ---
 
-### Realtime 6
+### Realtime 7
 
 #### Description
 
@@ -153,7 +276,7 @@ if success event `${room_id}-member` and `${user_id}-on-room-update` will be tri
 
 ---
 
-### Realtime 7
+### Realtime 8
 
 #### Description
 
@@ -178,7 +301,7 @@ if success event `${room_id}-on-delete-member` and `${user_id}-on-room-update` w
 
 ---
 
-### Realtime 8
+### Realtime 9
 
 #### Description
 
@@ -206,7 +329,7 @@ if success event `${room_id}-on-delete-member` and `${user_id}-on-room-update` w
 
 ---
 
-### Realtime 9
+### Realtime 10
 
 #### Description
 
@@ -226,7 +349,7 @@ if success event `${room_id}-on-delete-member` and `${user_id}-on-room-update` w
 
 ---
 
-### Realtime 10
+### Realtime 11
 
 #### Description
 
@@ -246,7 +369,7 @@ if success event `${room_id}-on-delete-member` and `${user_id}-on-room-update` w
 
 ---
 
-### Realtime 11
+### Realtime 12
 
 #### Description
 
@@ -275,7 +398,7 @@ if success event `${room_id}-on-delete-member` and `${user_id}-on-room-update` w
 
 ---
 
-### Realtime 12
+### Realtime 13
 
 #### Description
 
@@ -301,7 +424,7 @@ if success event `${room_id}-post` will be triggered with the new value
 
 ---
 
-### Realtime 13
+### Realtime 14
 
 #### Description
 
@@ -327,7 +450,7 @@ if success event `${room_id}-post` will be triggered with the new value
 
 ---
 
-### Realtime 14
+### Realtime 15
 
 #### Description
 
@@ -351,7 +474,7 @@ if success event `${room_id}-on-delete-post` will be triggered with the new valu
 
 ---
 
-### Realtime 15
+### Realtime 16
 
 #### Description
 
