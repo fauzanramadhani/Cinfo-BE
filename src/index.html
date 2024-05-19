@@ -1,8 +1,9 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <title>Socket.IO chat</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Socket.IO</title>
     <style>
       body {
         margin: 0;
@@ -59,19 +60,18 @@
   <body>
     <ul id="messages"></ul>
     <form id="form" action="">
-      <input id="input" autocomplete="off" />
-      <button type="submit">Send</button>
-      <button type="button" id="printNameButton">Print Name</button>
-      <button id="toggle-btn">Disconnect</button>
+      <input id="input" autocomplete="off" placeholder="Ketik pesan..." />
+      <button type="submit">Kirim</button>
+      <button type="button" id="printNameButton">Tampilkan Nama</button>
+      <button id="toggle-btn">Putuskan Koneksi</button>
     </form>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      let counter = 0;
       const socket = io({
         auth: {
-          roomOffset: 0,
+          serverOffset: 0,
         },
-        // enable retries
+        // aktifkan retry
         ackTimeout: 10000,
         retries: 3,
       });
@@ -83,9 +83,8 @@
       form.addEventListener("submit", (e) => {
         e.preventDefault();
         if (input.value) {
-          // compute a unique offset
-          const clientOffset = `${socket.id}-${counter++}`;
-          socket.emit("chat message", input.value, clientOffset);
+          // menghitung offset unik
+          socket.emit("chat message", input.value);
           input.value = "";
         }
       });
@@ -95,7 +94,7 @@
         item.textContent = msg;
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
-        socket.auth.roomOffset = serverOffset;
+        socket.auth.serverOffset = serverOffset;
       });
 
       const toggleButton = document.getElementById("toggle-btn");
@@ -103,10 +102,10 @@
       toggleButton.addEventListener("click", (e) => {
         e.preventDefault();
         if (socket.connected) {
-          toggleButton.innerText = "Connect";
+          toggleButton.innerText = "Hubungkan";
           socket.disconnect();
         } else {
-          toggleButton.innerText = "Disconnect";
+          toggleButton.innerText = "Putuskan Koneksi";
           socket.connect();
         }
       });

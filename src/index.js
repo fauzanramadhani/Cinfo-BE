@@ -61,9 +61,14 @@ async function main() {
   const app = express();
   const server = createServer(app);
   const io = new Server(server, {
-    connectionStateRecovery: {},
+    // connectionStateRecovery: {},
     // set up the adapter on each worker thread
-    adapter: createAdapter(defaultMongoCollection),
+    adapter: createAdapter(
+      postGlobalMongoCollection,
+      roomMongoCollection,
+      postMongoCollection,
+      accountMongoCollection
+    ),
   });
 
   app.use(cors());
@@ -71,14 +76,15 @@ async function main() {
   app.use(bodyParser.urlencoded({ extended: true }));
 
   app.get("/", (req, res) => {
-    res.sendFile(join(__dirname, "index.html"));
+    // res.sendFile(join(__dirname, "index.html"));
+    return res.status(200).json({
+      status: "success",
+      message: "Server is running...",
+    });
   });
 
   app.post("/register", register);
   app.get("/get-room-id", checkAuth, getRoomId);
-  // app.post("/:room_id/add-member", addMember);
-  // app.get("/:room_id/get-member", getAllMember);
-  // app.post(":room_id/delete-member", deleteMember);
 
   io.on("connection", async (socket) => {
     console.log("connected");
@@ -555,21 +561,32 @@ async function main() {
       callback({ status: "ok" });
     });
 
-    socket.on("chat message", async (msg, clientOffset, callback) => {
+    socket.on("chat message", async (msg, callback) => {
       try {
-        const result = await defaultMongoCollection.insertOne({
+        const date = new Date().getTime();
+        let clientOffset = 0;
+        const lastMessage = await defaultMongoCollection.findOne(
+          {},
+          { sort: { createdAt: -1 } }
+        );
+        if (lastMessage) {
+          clientOffset = lastMessage.client_offset + 1;
+        }
+        await defaultMongoCollection.insertOne({
           content: msg,
           client_offset: clientOffset,
+          createdAt: date,
         });
-        io.emit("chat message", msg, result.insertedId);
-        callback();
+        io.emit("chat message", msg, clientOffset);
+        callback({ status: "ok" });
       } catch (error) {
+        console.error(error.message);
         if (error.code === 11000) {
           // Duplicate key error code
           // Notify the client that the message was already inserted
           callback("Message already exists");
         } else {
-          console.error("Error inserting message into MongoDB:", error);
+          callback("Error inserting message into MongoDB:");
         }
       }
     });
@@ -577,6 +594,7 @@ async function main() {
     if (!socket.recovered) {
       // if the connection state recovery was not successful
       try {
+        const messageOffset = parseInt(socket.handshake.auth.serverOffset) || 0;
         const postGlobalOffset =
           parseInt(socket.handshake.auth.postGlobalOffset) || 0;
         const roomOffset = parseInt(socket.handshake.auth.roomOffset) || 0;
@@ -598,7 +616,7 @@ async function main() {
 
           if (members) {
             members.forEach((member) => {
-              io.emit(`${room._id.toString()}-member`, member);
+              socket.emit(`${room._id.toString()}-member`, member);
             });
           }
 
@@ -611,7 +629,7 @@ async function main() {
 
           if (posts) {
             posts.forEach((post) => {
-              io.emit(`${room._id.toString()}-post`, post);
+              socket.emit(`${room._id.toString()}-post`, post);
             });
           }
         });
@@ -621,7 +639,16 @@ async function main() {
           .toArray();
 
         postGlobal.forEach((post) => {
-          io.emit("postGlobal", post);
+          socket.emit("postGlobal", post);
+        });
+
+        const cursor = await defaultMongoCollection
+          .find({
+            client_offset: { $gt: messageOffset },
+          })
+          .toArray();
+        cursor.forEach((doc) => {
+          socket.emit("chat message", doc.content, doc._id);
         });
 
         // Mark socket as recovered

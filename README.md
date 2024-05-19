@@ -103,11 +103,32 @@ if success event `postGlobal` will be triggered with the new value
 
 #### Response
 
-if success event `postGlobal` will be triggered with the new value
+if success event `onDeletedPostGlobal` will be triggered with the new value
 
 ---
 
+
 ### Realtime 5
+
+#### Description
+
+`This api is supposed to be used by admin`
+
+#### Event
+
+`onDeletedPostGlobal`
+
+#### Message
+
+`-`
+
+#### Response
+
+`${deleted_post_global_id}`
+
+---
+
+### Realtime 6
 
 #### Description
 
@@ -136,7 +157,7 @@ if success event `postGlobal` will be triggered with the new value
 
 ---
 
-### Realtime 6
+### Realtime 7
 
 #### Description
 
@@ -161,7 +182,7 @@ if success event `room` will be triggered with the new value
 
 ---
 
-### Realtime 7
+### Realtime 8
 
 #### Description
 
@@ -184,26 +205,6 @@ if success event `room` will be triggered with the new value
 #### Response
 
 if success event `room` will be triggered with the new value
-
----
-
-### Realtime 8
-
-#### Description
-
-`This api is supposed to be used by admin`
-
-#### Event
-
-`onDeletedPostGlobal`
-
-#### Message
-
-`-`
-
-#### Response
-
-`${deleted_global_room_id}`
 
 ---
 
