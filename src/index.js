@@ -17,8 +17,8 @@ const postGlobalCollection = process.env.POST_GLOBAL_COLLECTION;
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { register, checkAuth } = require("./controller/auth");
-const { getRoomId } = require("./controller/room");
 const { isValidHex } = require("./utils/isValidHex");
+const randomNumberUntilThree = require("./utils/randomNumberUntilThree");
 
 if (cluster.isPrimary) {
   const numCPUs = availableParallelism();
@@ -84,7 +84,6 @@ async function main() {
   });
 
   app.post("/register", register);
-  app.get("/get-room-id", checkAuth, getRoomId);
 
   io.on("connection", async (socket) => {
     console.log("connected");
@@ -102,7 +101,7 @@ async function main() {
 
         const lastPost = await postGlobalMongoCollection.findOne(
           {},
-          { sort: { createdAt: -1 } }
+          { sort: { created_at: -1 } }
         );
         var lastPostOffset = 1;
         if (lastPost) {
@@ -113,7 +112,7 @@ async function main() {
           title: title,
           description: description,
           client_offset: lastPostOffset,
-          createdAt: date,
+          created_at: date,
         });
         const insertedPost = await postGlobalMongoCollection.findOne({
           _id: post.insertedId,
@@ -204,9 +203,10 @@ async function main() {
         const room_name = msgJson.room_name;
         const additional = msgJson.additional;
         const date = new Date().getTime();
+        const backgroundId = randomNumberUntilThree();
         const lastRoom = await roomMongoCollection.findOne(
           {},
-          { sort: { createdAt: -1 } }
+          { sort: { created_at: -1 } }
         );
         var roomOffset = 1;
         if (lastRoom) {
@@ -215,8 +215,9 @@ async function main() {
         const result = await roomMongoCollection.insertOne({
           room_name: room_name,
           additional: additional,
+          background_id: backgroundId,
           client_offset: roomOffset,
-          createdAt: date,
+          created_at: date,
         });
         // socket.join(result.insertedId);
         const insertedRoom = await roomMongoCollection.findOne({
@@ -300,7 +301,7 @@ async function main() {
         );
         if (members) {
           members.forEach((member) => {
-            io.emit(`${member._id.toString()}-on-room-update`, member.room_id);
+            io.emit(`${member._id.toString()}-on-room-update`, "");
           });
         }
         io.emit(`onDeleteRoom`, room_id);
@@ -332,7 +333,7 @@ async function main() {
           callback({ status: "error", message: "Invalid room id" });
           return;
         }
-
+        console.log(email)
         const member = await accountMongoCollection.findOne({
           email: email,
         });
@@ -371,7 +372,7 @@ async function main() {
         io.emit(`${room_id}-member`, updatedMember);
         io.emit(
           `${updatedMember._id.toString()}-on-room-update`,
-          updatedMember.room_id
+          room
         );
         callback({ status: "ok" });
       } catch (error) {
@@ -436,7 +437,7 @@ async function main() {
           return;
         }
         io.emit(`${room_id}-on-delete-member`, member._id.toString());
-        io.emit(`${member._id.toString()}-on-room-update`, member.room_id);
+        io.emit(`${member._id.toString()}-on-room-update`, "");
         callback({ status: "ok" });
       } catch (error) {
         console.log(error.message.toString());
@@ -464,7 +465,7 @@ async function main() {
         }
         const lastPost = await postMongoCollection.findOne(
           {},
-          { sort: { createdAt: -1 } }
+          { sort: { created_at: -1 } }
         );
         var lastPostOffset = 1;
         if (lastPost) {
@@ -476,22 +477,11 @@ async function main() {
           title: title,
           description: description,
           client_offset: lastPostOffset,
-          createdAt: date,
+          created_at: date,
         });
         const insertedPost = await postMongoCollection.findOne({
           _id: post.insertedId,
         });
-        await roomMongoCollection.findOneAndUpdate(
-          {
-            _id: roomObjectId,
-          },
-          {
-            $push: {
-              post_id: post.insertedId.toString(),
-            },
-          },
-          { returnDocument: "after" }
-        );
         io.emit(`${room_id}-post`, insertedPost);
         callback({ status: "ok" });
       } catch (error) {
@@ -547,16 +537,9 @@ async function main() {
       await postMongoCollection.deleteOne({
         _id: postObjectId,
       });
-      const updatedRoom = await roomMongoCollection.findOneAndUpdate(
-        {
-          _id: new ObjectId(post.room_id),
-        },
-        {
-          $pull: {
-            post_id: post_id,
-          },
-        }
-      );
+      const updatedRoom = await roomMongoCollection.findOne({
+        _id: new ObjectId(post.room_id),
+      });
       io.emit(`${updatedRoom._id.toString()}-on-delete-post`, post_id);
       callback({ status: "ok" });
     });
@@ -567,7 +550,7 @@ async function main() {
         let clientOffset = 0;
         const lastMessage = await defaultMongoCollection.findOne(
           {},
-          { sort: { createdAt: -1 } }
+          { sort: { created_at: -1 } }
         );
         if (lastMessage) {
           clientOffset = lastMessage.client_offset + 1;
@@ -575,7 +558,7 @@ async function main() {
         await defaultMongoCollection.insertOne({
           content: msg,
           client_offset: clientOffset,
-          createdAt: date,
+          created_at: date,
         });
         io.emit("chat message", msg, clientOffset);
         callback({ status: "ok" });
@@ -600,6 +583,26 @@ async function main() {
         const roomOffset = parseInt(socket.handshake.auth.roomOffset) || 0;
         const postOffset = parseInt(socket.handshake.auth.postOffset) || 0;
         const memberOffset = parseInt(socket.handshake.auth.memberOffset) || 0;
+
+        const members = await accountMongoCollection
+        .find()
+        .toArray();
+
+        members.forEach(async (member) => {
+          if (member.room_id) {
+            const roomObjectId = new ObjectId(member.room_id);
+            const memberRoom = await roomMongoCollection
+            .findOne(
+              {
+                _id: roomObjectId
+              }
+            )
+            socket.emit(`${member._id.toString()}-on-room-update`, memberRoom);
+          } else {
+            socket.emit(`${member._id.toString()}-on-room-update`, "");
+          }
+          
+        });
 
         const rooms = await roomMongoCollection
           .find({ client_offset: { $gt: roomOffset } })

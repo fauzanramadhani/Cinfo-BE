@@ -26,7 +26,7 @@ Server for the Cinfo application, this server was built using Websocket technolo
   "title": "Post Global Title 4",
   "description": "Desc 4",
   "client_offset": 4,
-  "createdAt": 1714801371544
+  "created_at": 1714801371544
 }
 ```
 
@@ -146,12 +146,12 @@ if success event `onDeletedPostGlobal` will be triggered with the new value
 
 ```json
 {
-  "_id": "6626483efa600550d677b8e0",
-  "room_name": "Teknik Informatika",
-  "additional": "Angkatan 3",
-  "client_offset": 2,
-  "createdAt": 1713784894417,
-  "post_id": ["66264872fa600550d677b8e1", "66264891fa600550d677b8e2"]
+    "_id": "664a1dd077fc1177814af97d",
+    "room_name": "Teknik Informatika 1",
+    "additional": "Angkatan",
+    "background_id": 3,
+    "client_offset": 1,
+    "created_at": 1716133328600
 }
 ```
 
@@ -323,7 +323,7 @@ if success event `${room_id}-on-delete-member` and `${user_id}-on-room-update` w
   "_id": "662e724ecc633415df745553",
   "email": "fauzanramadhani06@gmail.com",
   "client_offset": 1,
-  "createdAt": 1714319950464,
+  "created_at": 1714319950464,
   "room_id": "662e78514f1c1456f7e8ad50"
 }
 ```
@@ -366,7 +366,16 @@ if success event `${room_id}-on-delete-member` and `${user_id}-on-room-update` w
 
 #### Response
 
-`${new_room_id}`
+```json
+{
+    "_id": "6666cf187ed2f3e58c7a0185",
+    "room_name": "Jurusan Teknik Elektro",
+    "additional": "2021",
+    "background_id": 3,
+    "client_offset": 2,
+    "created_at": 1718013720866
+}
+```
 
 ---
 
@@ -393,7 +402,7 @@ if success event `${room_id}-on-delete-member` and `${user_id}-on-room-update` w
   "title": "Post 2",
   "description": "Angkatan 3",
   "client_offset": 5,
-  "createdAt": 1713784977905
+  "created_at": 1713784977905
 }
 ```
 
@@ -522,33 +531,5 @@ _x-www-form-urlencoded_
   "data": {
     "user_id": "6627177e62138a136945004c"
   }
-}
-```
-
----
-
-### HTTP Request 2
-
-#### Description
-
-`This api is supposed to be used by user`
-
-#### Endpoints
-
-`GET /get-room-id`
-
-#### Request
-
-**Headers**
-
-`authorization: Bearer ${user_id}`
-
-#### Response
-
-```json
-{
-  "status": "success",
-  "message": "Get room id successfully",
-  "data": "662645acb3c221d33c039365"
 }
 ```

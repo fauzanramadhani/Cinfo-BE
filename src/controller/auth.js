@@ -14,9 +14,12 @@ const register = async (req, res) => {
       email: email,
     });
     if (isExist) {
-      return res.status(400).json({
-        status: "error",
+      return res.status(200).json({
+        status: "success",
         message: "User already exist",
+        data: {
+          user_id: isExist._id.toString(),
+        },
       });
     }
     const lastAccount = await accountMongoCollection.findOne(
@@ -30,7 +33,7 @@ const register = async (req, res) => {
     await accountMongoCollection.insertOne({
       email: email,
       client_offset: clientOffset,
-      createdAt: date,
+      created_at: date,
     });
     const user = await accountMongoCollection.findOne({
       email: email,
