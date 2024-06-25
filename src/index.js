@@ -91,7 +91,7 @@ async function main() {
       console.log("user disconnected");
     });
 
-    // Global Room
+    // Global Post
 
     socket.on("createPostGlobal", async (req, callback) => {
       try {
@@ -322,13 +322,11 @@ async function main() {
           callback({ status: "error", message: "Invalid room id" });
           return;
         }
-
         const roomObjectId = new ObjectId(room_id);
         const room = await roomMongoCollection.findOne({
           _id: roomObjectId,
         });
         socket;
-
         if (!room) {
           callback({ status: "error", message: "Invalid room id" });
           return;
@@ -337,7 +335,6 @@ async function main() {
         const member = await accountMongoCollection.findOne({
           email: email,
         });
-
         if (!member) {
           callback({ status: "error", message: "User is not exist" });
           return;
@@ -357,7 +354,6 @@ async function main() {
           },
           { returnDocument: "after" }
         );
-
         await roomMongoCollection.findOneAndUpdate(
           {
             _id: roomObjectId,
@@ -389,7 +385,6 @@ async function main() {
           callback({ status: "error", message: "Invalid member id" });
         }
         const memberObjectId = new ObjectId(member_id);
-
         const member = await accountMongoCollection.findOneAndUpdate(
           {
             _id: memberObjectId,
@@ -398,7 +393,6 @@ async function main() {
           { $unset: { room_id: "" } },
           { returnDocument: "after" }
         );
-
         if (!member) {
           callback({
             status: "error",
@@ -406,7 +400,6 @@ async function main() {
           });
           return;
         }
-
         if (!isValidHex(room_id)) {
           callback({
             status: "error",
@@ -414,7 +407,6 @@ async function main() {
           });
           return;
         }
-
         const roomObjectId = new ObjectId(room_id);
 
         const updatedRoom = await roomMongoCollection.findOneAndUpdate(
@@ -428,7 +420,6 @@ async function main() {
           },
           { returnDocument: "after" }
         );
-
         if (!updatedRoom) {
           callback({
             status: "error",
